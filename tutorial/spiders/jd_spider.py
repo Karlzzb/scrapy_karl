@@ -17,7 +17,7 @@ class JdSpider(scrapy.Spider):
     def parse(self,response):
         '分别获得商品的地址和下一页地址'
         req = []
-        for i in range(0, 168):
+        for i in range(0, 10):
             url = "https://list.jd.com/list.html?cat=9987,653,655&page=" + str(i+1) + "&sort=sort%5Frank%5Fasc&trans=1&JL=6_0_0&ms=6"
             r = Request(url, callback=self.parse)
             req.append(r)
@@ -34,7 +34,7 @@ class JdSpider(scrapy.Spider):
 
     def parse_product(self,response):
         '商品页获取title,price,product_id'
-        phonename = response.xpath('//div/ul[contains(@class, "parameter2 p-parameter-list")]/li/@title').extract_first()
+        phonename = response.xpath('//div/ul[contains(@class, "parameter2 p-parameter-list")]/li[1]/@title').extract_first()
         issueyear = response.xpath('//div[contains(@class, "Ptable-item")][1]/dl/dd/text()').re(u'[1-9][0-9][0-9][1-9]\u5e74')
         issuemonth = response.xpath('//div[contains(@class, "Ptable-item")][1]/dl/dd/text()').re(u'[1-9][0-9]*\u6708')
         pattern = r"(\d+)\.html$"
@@ -49,5 +49,6 @@ class JdSpider(scrapy.Spider):
         item['issueyear'] = issueyear
         item['issuemonth'] = issuemonth
         item['price'] = price
+        item['itemurl'] = response.url
         return item
 ############################################################################
